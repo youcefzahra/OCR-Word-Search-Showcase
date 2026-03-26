@@ -1,0 +1,336 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>OCR Word Search Solver</title>
+    <style>
+        /* Réinitialisation */
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
+
+        body {
+            font-family: Arial, sans-serif;
+            color: #f2f2f2;
+            background-color: #1e1e1e;
+            line-height: 1.6;
+        }
+
+        header {
+            text-align: center;
+            background: linear-gradient(to bottom, #2E3B4E, #1E1E1E);
+            padding: 50px 20px;
+        }
+
+        header h1 {
+            font-size: 3rem;
+            color: #E6EDF3;
+        }
+
+        header p {
+            margin: 10px 0 20px;
+            font-size: 1.2rem;
+            color: #BCC6D2;
+        }
+
+        .topnav a {
+            margin: 0 10px;
+            padding: 10px 15px;
+            text-decoration: none;
+            color: #fff;
+            background-color: #4F647A;
+            border-radius: 5px;
+            transition: background-color 0.3s ease;
+        }
+
+        .topnav a:hover {
+            background-color: #6A8CAA;
+        }
+
+        .section {
+            padding: 50px 20px;
+            text-align: center;
+            opacity: 0; /* Initialement invisible */
+            transform: translateY(20px); /* Légèrement décalé */
+            transition: opacity 0.8s ease-out, transform 0.8s ease-out;
+        }
+
+        .section.visible {
+            opacity: 1; /* Rend visible */
+            transform: translateY(0); /* Annule le décalage */
+        }
+
+        .features {
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            flex-wrap: wrap;
+            gap: 40px;
+            margin: 0 auto;
+            max-width: 1200px;
+            padding-top: 20px;
+        }
+
+        .team-row {
+            display: flex;
+            justify-content: center;
+            gap: 20px;
+            flex-wrap: wrap;
+        }
+
+        /* Cartes des fonctionnalités (grandes) */
+        .card-feature {
+            background-color: #333239;
+            padding: 20px;
+            border-radius: 10px;
+            width: 2000px; /* Plus large */
+            text-align: center;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        .card-feature img {
+    width: 300px; /* Largeur uniforme */
+    height: auto; /* Ajuste la hauteur automatiquement pour garder les proportions */
+    object-fit: contain; /* Assure que l'image entière s'adapte sans être rognée */
+    border-radius: 10px; /* Ajout d'arrondis optionnels */
+    margin: 10px; /* Espacement entre les images */
+}
+
+
+        .card-feature:hover {
+            transform: scale(1.05);
+            background-color: #444;
+        }
+
+        /* Cartes de contact (taille classique) */
+        .card-contact {
+            background-color: #333239;
+            padding: 20px;
+            border-radius: 10px;
+            width: 300px;
+            text-align: center;
+            transition: transform 0.3s ease, background-color 0.3s ease;
+        }
+
+        .card-contact img {
+            width: 100px;
+            height: 100px;
+            border-radius: 50%;
+            object-fit: cover;
+            margin-bottom: 15px;
+        }
+
+        .card-contact:hover {
+            transform: scale(1.05);
+            background-color: #444;
+        }
+
+        footer {
+            background: #2E3B4E;
+            color: #BCC6D2;
+            text-align: center;
+            padding: 20px;
+        }
+
+        #imageModal {
+            display: none;
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: rgba(0, 0, 0, 0.8);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+        }
+
+        #imageModal img {
+            max-width: 80%;
+            max-height: 80%;
+            border-radius: 10px;
+        }
+
+        #closeModal {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: #fff;
+            color: #333;
+            border: none;
+            padding: 10px 20px;
+            cursor: pointer;
+            font-size: 16px;
+        }
+
+    </style>
+</head>
+<body>
+    <header>
+        <h1>OCR Word Search Solver</h1>
+        <p>Un projet innovant conçu pour résoudre des grilles de mots cachés grâce à la puissance de l'IA et du traitement d'images.</p>
+        <div class="topnav">
+            <a href="#about">À propos</a>
+            <a href="#features">Fonctionnalités</a>
+            <a href="#team-contact">Équipe & Contact</a>
+        </div>
+    </header>
+
+    <main>
+        <section id="about" class="section">
+            <h2>À propos</h2>
+            <br>
+            <p>Nous sommes un groupe de trois étudiants de l'EPITA, passionnés par les technologies modernes et l'intelligence artificielle.<br> 
+               Notre projet OCR Word Search Solver combine innovation et rigueur pour fournir un outil performant capable de détecter et résoudre des grilles de mots cachés.</p>
+        </section>
+
+        <section id="features" class="section">
+            <h2>Fonctionnalités</h2>
+            <div class="features">
+                <div class="card-feature">
+                    <h3>Détection des caractères</h3>
+                    <p>
+                        Analyse et identification des lettres dans une grille basée sur la connectivité et les distances entre les regroupements de pixels. 
+                        Les lettres sont distinguées des mots grâce à des algorithmes optimisés pour gérer les images bruitées ou complexes, permettant une 
+                        détection et un encadrement précis des caractères.</p>
+                    <img src="Image_site/detection_lettre_image1_niveau_1.png" alt="Détection des caractères" style="width: 260px; height: auto;">
+                    <img src="Image_site/detection_lettre_image1_niveau_2.png" alt="Détection des caractères" style="width: 260px; height: auto;">
+                    <img src="Image_site/detection_lettre_image2_niveau_2.png" alt="Détection des caractères"style="width: 260px; height: auto;"> 
+                </div>
+                <div class="card-feature">
+                    <h3>Prétraitement d'images</h3>
+                    <p>Amélioration de la qualité visuelle grâce à une conversion progressive de l’image : d’abord en niveaux de gris, puis en noir et blanc. 
+                        Le bruit est ensuite supprimé à l’aide de fonctions spécifiques adaptées au niveau de bruit détecté, évalué par une fonction dédiée. 
+                        Une fonction de rotation automatique ajuste l’image si nécessaire en fonction de l’orientation de la grille.</p>
+                    <img src="Image_site/pretraitement_image2_niveau_2_apres.png" alt="Prétraitement d'images" style="width: 260px; height: auto;"> 
+                    <img src="Image_site/pretraitement_image1_niveau_2_apres.png" alt="Prétraitement d'images" style="width: 260px; height: auto;">
+                    <img src="Image_site/pretraitement_image2_niveau_1_apres.png" alt="Prétraitement d'images" style="width: 260px; height: auto;">
+                    <img src="Image_site/pretraitement_image1_niveau_1_apres.png" alt="Prétraitement d'images" style="width: 260px; height: auto;">
+
+                    
+                </div>
+                <div class="card-feature">
+                    <h3>Résolution de grilles</h3>
+                    <p>Extraction et encadrement visuel des mots recherchés dans les grilles, en s'appuyant sur la position des lettres détectées sur l'image. 
+                        Les mots sont identifiés en tenant compte des directions horizontales, verticales et diagonales, garantissant une précision optimale.</p>
+                    <img src="Image_site/reponse_lettre_image1_niveau_1.png" alt="Prétraitement d'images" style="width: 260px; height: auto;"> 
+                    <img src="Image_site/reponse_lettre_image1_niveau_2.png" alt="Prétraitement d'images" style="width: 260px; height: auto;">
+                    <img src="Image_site/reponse_lettre_image2_niveau_2.png" alt="Prétraitement d'images" style="width: 260px; height: auto;">
+
+                </div>
+                <div class="card-feature">
+                    <h3>Réseau de neurones</h3>
+                    <p>Utilisation de CNN entraînés sur des données variées pour une reconnaissance fiable, même sur des images déformées ou bruitées.</p>
+                    <img src="Image_site/prediction_ia.png" alt="Réseau de neurones"style="width: 260px; height: auto;">
+                    <img src="Image_site/predict.png" alt="Réseau de neurones"style="width: 260px; height: auto;">
+
+
+                </div>
+            </div>
+        </section>
+
+        <!-- Équipe et contact -->
+        <section id="team-contact" class="section">
+            <h2>Équipe & Contact</h2>
+            <br>
+            <div class="team-row">
+                <div class="card-contact">
+                    <img src="Image_site/youcef_zahra.jpg" alt="Youcef ZAHRA">
+                    <h3>Youcef ZAHRA</h3>
+                    <p>Développeur de la détection des lettres et prétraitement des images.</p>
+                </div>
+                <div class="card-contact">
+                    <img src="Image_site/jessim_ziani.jpg" alt="Jessim ZIANI">
+                    <h3>Jessim ZIANI</h3>
+                    <p>Développeur du traitement des images et prétraitement.</p>
+                </div>
+                <div class="card-contact">
+                    <img src="Image_site/wael_akhdar.jpg" alt="Wael AHKDAR">
+                    <h3>Wael AHKDAR</h3>
+                    <p>Chef de projet et développeur de l'intelligence artificielle.</p>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- Modale pour agrandir les images -->
+    <div id="imageModal">
+        <img id="modalImage" src="" alt="Agrandissement">
+        <button id="closeModal">Fermer</button>
+    </div>
+
+    <footer>
+        <div style="background-color: #2E3B4E; color: #BCC6D2; text-align: center; padding: 20px;">
+            <p style="font-size: 16px; margin: 5px;">&copy; 2024 OCR Word Search Solver. Tous droits réservés.</p>
+            <p style="font-size: 12px; max-width: 800px; margin: 5px auto;">
+                Ce projet a été réalisé par des étudiants de l'EPITA. Son code source et ses fonctionnalités sont strictement réservés à un usage pédagogique 
+                et académique au sein de l'école. Toute diffusion ou utilisation extérieure non autorisée est interdite.
+            </p>
+        </div>
+    </footer>
+
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Sélections générales
+            const sections = document.querySelectorAll('.section');
+            const imagesGeneral = document.querySelectorAll('.card img'); // Images générales
+            const imagesFeatures = document.querySelectorAll('.card-feature img'); // Images des fonctionnalités
+            const modal = document.getElementById('imageModal'); // Référence à la modale
+            const modalImage = document.getElementById('modalImage'); // Image affichée en grand
+            const closeModal = document.getElementById('closeModal'); // Bouton pour fermer la modale
+    
+            // Fonction pour vérifier la visibilité des sections
+            function checkVisibility() {
+                const triggerBottom = window.innerHeight * 0.85;
+    
+                sections.forEach(section => {
+                    const sectionTop = section.getBoundingClientRect().top;
+    
+                    if (sectionTop < triggerBottom) {
+                        section.classList.add('visible');
+                    }
+                });
+            }
+    
+            // Fonction pour gérer l'ouverture de la modale
+            function openModal(img) {
+                modal.style.display = 'flex';
+                modalImage.src = img.src;
+            }
+    
+            // Ajouter des événements de clic sur les images générales
+            imagesGeneral.forEach(image => {
+                image.addEventListener('click', () => {
+                    openModal(image);
+                });
+            });
+    
+            // Ajouter des événements de clic sur les images des fonctionnalités
+            imagesFeatures.forEach(image => {
+                image.addEventListener('click', () => {
+                    openModal(image);
+                });
+            });
+    
+            // Fermer la modale lorsqu'on clique sur le bouton ou en dehors de l'image
+            closeModal.addEventListener('click', () => {
+                modal.style.display = 'none';
+            });
+    
+            modal.addEventListener('click', e => {
+                if (e.target === modal) {
+                    modal.style.display = 'none';
+                }
+            });
+    
+            // Vérifier la visibilité au chargement et au scroll
+            window.addEventListener('scroll', checkVisibility);
+            checkVisibility();
+        });
+    </script>
+    
+</body>
+</html>
